@@ -8,26 +8,49 @@
 class UserIdentity extends CUserIdentity
 {
 	/**
+	 * Id of the user record in the database
+	 */
+	private $_id;
+	
+	public function getId()
+	{
+		return $this->_id;
+	}
+	
+	/**
 	 * Authenticates a user.
-	 * The example implementation makes sure if the username and password
-	 * are both 'demo'.
-	 * In practical applications, this should be changed to authenticate
-	 * against some persistent user identity storage (e.g. database).
 	 * @return boolean whether authentication succeeds.
 	 */
 	public function authenticate()
 	{
-		$users=array(
-			// username => password
-			'demo'=>'demo',
-			'admin'=>'admin',
-		);
-		if(!isset($users[$this->username]))
-			$this->errorCode=self::ERROR_USERNAME_INVALID;
-		elseif($users[$this->username]!==$this->password)
-			$this->errorCode=self::ERROR_PASSWORD_INVALID;
+		$user = User::model()->findByAttributes( array('careerAcct'=>$this->username) );
+		
+		if ($user === null)
+		{
+			$this->errorCode = self::ERROR_USERNAME_INVALID;
+		}
 		else
-			$this->errorCode=self::ERROR_NONE;
-		return !$this->errorCode;
+		{
+			// Temporary password authentication; change it to use Purdue's CAS authentication
+			if ( ($this->username . 'demo' !== $this->password) and ($this->username . 'admin' !== $this->password) )
+			{
+				$this->errorCode = self::ERROR_PASSWORD_INVALID;
+			}
+			else
+			{
+				$this->_id = $user->id;
+				if (null === $user->lastLogin)
+				{
+					$lastLogin = time();
+				}
+				else
+				{
+					$lastLogin = strtotime($user->lastLogin);
+				}
+				$this->setState('lastLogin', $lastLogin);
+				$this->errorCode = self::ERROR_NONE;
+			}
+			return !$this->errorCode;
+		}
 	}
 }

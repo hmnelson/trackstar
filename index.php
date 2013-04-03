@@ -1,7 +1,11 @@
 <?php
 
 // change the following paths if necessary
-$yii=dirname(__FILE__).'/../yii-1.1.13.e9e4a0/framework/yii.php';
+// uncomment the following line for use in a sandbox directory on mmweb
+// $yii= '/var/www/data/root/mmweb/yii/framework/yii.php';
+// uncomment the following line for use in your local Sites folder
+$yii=dirname(__FILE__).'/../yii/framework/yii.php';
+
 $config=dirname(__FILE__).'/protected/config/main.php';
 
 // remove the following lines when in production mode

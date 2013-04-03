@@ -11,6 +11,10 @@ class Controller extends CController
 	 */
 	public $layout='//layouts/column1';
 	/**
+	 * @var public property containing the class to add to the HTML tag of views
+	 */
+	public $htmlId = '';
+	/**
 	 * @var array context menu items. This property will be assigned to {@link CMenu::items}.
 	 */
 	public $menu=array();

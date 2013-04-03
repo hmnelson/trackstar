@@ -2,6 +2,12 @@
 
 class SiteController extends Controller
 {
+	
+	/**
+	 * @var public property containing the class to add to the HTML tag of views
+	 */
+	public $htmlId = 'site';
+	
 	/**
 	 * Declares class-based actions.
 	 */
@@ -30,6 +36,22 @@ class SiteController extends Controller
 		// renders the view file 'protected/views/site/index.php'
 		// using the default layout 'protected/views/layouts/main.php'
 		$this->render('index');
+	}
+	
+	/**
+	 * This is the main administration page, which presents links to the 
+	 * management pages for projects, users, etc.
+	 */
+	public function actionAdmin()
+	{
+		if(Yii::app()->user->isGuest)
+		{
+			$this->redirect('login');
+		}
+		else
+		{
+			$this->render('admin');
+		}
 	}
 
 	/**
