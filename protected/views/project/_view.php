@@ -3,35 +3,29 @@
 /* @var $data Project */
 ?>
 
-<div class="view">
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('id')); ?>:</b>
-	<?php echo CHtml::link(CHtml::encode($data->id), array('view', 'id'=>$data->id)); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('name')); ?>:</b>
-	<?php echo CHtml::encode($data->name); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('description')); ?>:</b>
-	<?php echo CHtml::encode($data->description); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('createTime')); ?>:</b>
-	<?php echo CHtml::encode($data->createTime); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('creatorId')); ?>:</b>
-	<?php echo CHtml::encode($data->creatorId); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('updateTime')); ?>:</b>
-	<?php echo CHtml::encode($data->updateTime); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('updaterId')); ?>:</b>
-	<?php echo CHtml::encode($data->updaterId); ?>
-	<br />
-
+<div class="view row-fluid">
+  <div class="span11">
+  
+    <div class="span12 name">
+      <b><?php echo CHtml::link(CHtml::encode($data->name), array('view', 'id'=>$data->id)); ?></b>
+    </div>
+  
+    <p class="span12">
+      <?php echo CHtml::encode($data->description); ?>
+    </p>
+  
+    <div class="span6 small muted left">
+      Created by
+      <?php echo CHtml::encode($data->creator->fullName); ?>,
+			<?php echo CHtml::encode(date('l, F d, Y, g:i a', strtotime($data->createTime))); ?>
+    </div>
+  
+    <div class="span6 small muted right text-right">
+      Updated by
+      <?php echo CHtml::encode($data->updater->fullName); ?>,
+			<?php echo CHtml::encode(date('l, F d, Y, g:i a', strtotime($data->updateTime))); ?>
+    </div>
+    
+   </div>
 
 </div>

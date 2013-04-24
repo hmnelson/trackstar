@@ -60,14 +60,16 @@ return array(
 			),
 		),
 		
+		/*
 		'db'=>array(
 			'connectionString' => 'sqlite:'.dirname(__FILE__).'/../data/testdrive.db',
 		),
+		*/
 		
 		// uncomment the following to use a local MySQL database
 		
 		'db'=>array(
-			'connectionString' => 'mysql:host=localhost;dbname=pmm',
+			'connectionString' => 'mysql:host=127.0.0.1;dbname=pmm',
 			'tablePrefix' => 'ts_',
 			'emulatePrepare' => true,
 			'username' => 'root',
@@ -86,6 +88,14 @@ return array(
 			'charset' => 'utf8',
 		),
 		*/
+		
+		'authManager'=>array(
+		  'class'=>'CDbAuthManager',
+			'connectionID'=>'db',
+			'itemTable'=>'mmw_authItem',
+			'itemChildTable'=>'mmw_authItemChild',
+			'assignmentTable'=>'mmw_authAssignment',
+		),
 		
 		'errorHandler'=>array(
 			// use 'site/error' action to display errors

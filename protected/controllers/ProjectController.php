@@ -36,13 +36,13 @@ class ProjectController extends Controller
 				'actions'=>array('index','view'),
 				'users'=>array('@'),
 			),
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
+			array('allow', // allow authenticated user to perform 'admin', 'create', 'update', and 'adduser' actions
+				'actions'=>array('admin', 'create', 'update'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
-				'users'=>array('admin'),
+				'actions'=>array('delete', 'adduser'),
+				'roles'=>array('projectOwner','projectMember',),
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),
@@ -157,6 +157,40 @@ class ProjectController extends Controller
 		$this->render('admin',array(
 			'model'=>$model,
 		));
+	}
+	
+	/**
+	 * Form for adding a user to the project, in a specified role
+	 */
+	public function actionAdduser($id)
+	{
+		$project = $this->loadModel($id);
+		if(!Yii::app()->user->checkAccess('createUser', array('project'=>$project)))
+		{
+			throw new CHttpException(403, 'You are not authorized to add users to this project.');
+		}
+		$form = new ProjectUserForm;
+		// collect user input data
+		if(isset($_POST['ProjectUserForm']))
+		{
+			$form->attributes = $_POST['ProjectUserForm'];
+			$form->project = $project;
+			// validate user inputs and set a success flash message if valid
+			if($form->validate())
+			{
+				Yii::app()->user->setFlash('success', $form->username." has been added to the project.");
+				$form = new ProjectUserForm;
+			}
+		}
+		// display the add user form
+		$users = User::model()->findAll();
+		$usernames = array();
+		foreach ($users as $user)
+		{
+			$usernames[] = $user->careerAcct;
+		}
+		$form->project = $project;
+		$this->render('adduser', array('model'=>$form, 'usernames'=>$usernames));
 	}
 
 	/**

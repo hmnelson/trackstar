@@ -24,7 +24,7 @@
  * @property User $creator
  * @property User $updater
  */
-class Issue extends TrackStartActiveRecord
+class Issue extends TrackStarActiveRecord
 {
 	const TYPE_BUG = 0;
 	const TYPE_FEATURE = 1;

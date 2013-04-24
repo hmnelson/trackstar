@@ -29,6 +29,21 @@ class Project extends TrackStarActiveRecord
 	{
 		return parent::model($className);
 	}
+	
+	/**
+	 * Returns the list of project roles (roles whose names start with "project")
+	 */
+	public static function getUserRoleOptions()
+	{
+		$roles = preg_filter('/project.+/', '$0', array_keys(Yii::app()->authManager->getRoles()));
+		$filteredRoles = array();
+		foreach($roles as $role)
+		{
+			$filteredRoles[] = array('name'=>$role, 'value'=>$role);
+		}
+		$rolesArray = CHtml::listData($filteredRoles, 'name', 'value');
+		return $rolesArray;
+	}
 
 	/**
 	 * @return string the associated database table name
@@ -68,6 +83,82 @@ class Project extends TrackStarActiveRecord
 			'creator' => array(self::BELONGS_TO, 'User', 'creatorId'),
 			'updater' => array(self::BELONGS_TO, 'User', 'updaterId'),
 		);
+	}
+	
+	/**
+	 * Creates an association between the project and a user
+	 */
+	public function associateUserToProject($userId)
+	{
+		$sql = "insert into ts_project_user (projectId, userId, createUserId) values (:projectId, :userId, :createUserId)";
+		$command = Yii::app()->db->createCommand($sql);
+		$command->bindValue(':projectId', $this->id, PDO::PARAM_INT);
+		$command->bindValue(':userId', $userId, PDO::PARAM_INT);
+		$command->bindValue(':createUserId',Yii::app()->user->getId(), PDO::PARAM_INT);
+		return $command->execute();
+	}
+	
+	/**
+	 * @return boolean whether a user is associated with the project
+	 */
+	public function isUserInProject($userId)
+	{
+		$sql = "select userId from ts_project_user where projectId=:projectId and userId=:userId";
+		$command = Yii::app()->db->createCommand($sql);
+		$command->bindValue(':projectId', $this->id, PDO::PARAM_INT);
+		$command->bindValue(':userId', $userId, PDO::PARAM_INT);
+		return $command->execute() == 1 ? true : false;
+	}
+	
+	/**
+	 * Removes the association between the project and a user
+	 */
+	public function removeUserFromProject($userId)
+	{
+		$sql = "delete from ts_project_user where projectId=:projectId and userId=:userId";
+		$command = Yii::app()->db->createCommand($sql);
+		$command.bindValue(':projectId', $this->id, PDO::PARAM_INT);
+		$command.bindValue(':userId', $userId, PDO::PARAM_INT);
+		$command->execute();
+	}
+	
+	/*
+	 * Creates an association between the project, the user, and the user's role within the project
+	 */
+	public function associateUserToRole($userId, $role)
+	{
+		$sql = "insert into ts_project_user_role (projectId, userId, role) values (:projectId, :userId, :role)";
+		$command = Yii::app()->db->createCommand($sql);
+		$command->bindValue(':projectId', $this->id, PDO::PARAM_INT);
+		$command->bindValue(':userId', $userId, PDO::PARAM_INT);
+		$command->bindValue(':role', $role, PDO::PARAM_STR);
+		return $command->execute();
+	}
+	
+	/**
+	 * @return boolean whether the current user is in the specified role within the context of this project
+	 */
+	public function isUserInRole($role)	
+	{
+		$sql = "select role from ts_project_user_role where projectId=:projectId and userId=:userId and role=:role";
+		$command = Yii::app()->db->createCommand($sql);
+		$command->bindValue(':projectId', $this->id, PDO::PARAM_INT);
+		$command->bindValue(':userId', Yii::app()->user->getId(), PDO::PARAM_INT);
+		$command->bindValue(':role', $role, PDO::PARAM_STR);
+		return $command->execute() == 1 ? true : false;
+	}
+	
+	/**
+	 * rmoves an association between the project, the user, and the user's role within the project
+	 */
+	public function removeUserFromRole($userId, $role)
+	{
+		$sql = "delete from ts_project_user_role where projectId=:projectId and userId=:userId and role=:role";
+		$command = Yii::app()->db->createCommand($sql);
+		$command->bindValue(':projectId', $this->id, PDO::PARAM_INT);
+		$command->bindValue(':userId', $userId, PDO::PARAM_INT);
+		$command->bindValue(':role', $role, PDO::PARAM_STR);
+		return $command->execute();
 	}
 
 	/**

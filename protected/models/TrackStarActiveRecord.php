@@ -8,7 +8,7 @@ abstract class TrackStarActiveRecord extends CActiveRecord
 	protected function beforeValidate()
 	{
 		$this->updateTime = new CDbExpression('NOW()');
-		$this->updaterId = Yii::app()->user-id;
+		$this->updaterId = Yii::app()->user->id;
 		
 		if($this->isNewRecord)
 		{
